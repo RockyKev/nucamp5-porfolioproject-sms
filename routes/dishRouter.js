@@ -71,11 +71,10 @@ dishRouter
 // .route("/:dishId/recipe/:recipeId")
 dishRouter
   .route("/:dishId")
-
-  .get((request, response, next) => {
     // "Will send details of the dish: " + request.params.dishId + " to you! "
     // + request.params.recipeId
 
+  .get((request, response, next) => {
     Dishes.findById(request.params.dishId)
       .then(
         dish => {
