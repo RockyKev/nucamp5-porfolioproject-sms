@@ -17,9 +17,7 @@ dishRouter
     Dishes.find({})
       .then(
         dishes => {
-          response.statusCode = 200;
-          response.setHeader("Content-Type", "application/json");
-          response.json(dishes);
+          response = setResponse(response, dishes);
         },
         err => next(err)
       )
@@ -54,6 +52,14 @@ dishRouter
 
   .delete((request, response, next) => {
     // response.end("Deleting all the dishes!");
+    var succeeded = removeObjects(DISHES); //remove dishes here would handle the promise of removing the dishes
+    if (succeeded == true) {
+      response = happyResponse();
+    } else {
+      response = unhappyResponse();
+    } // This replaces the rest of this entire API block
+    // Here you would call out to another function to try and delete the object. Return a true/false of whether you succeeded in removing the object.
+    // do response stuff here based on result of above function call
 
     Dishes.remove({})
       .then(
@@ -71,11 +77,10 @@ dishRouter
 // .route("/:dishId/recipe/:recipeId")
 dishRouter
   .route("/:dishId")
+  // "Will send details of the dish: " + request.params.dishId + " to you! "
+  // + request.params.recipeId
 
   .get((request, response, next) => {
-    // "Will send details of the dish: " + request.params.dishId + " to you! "
-    // + request.params.recipeId
-
     Dishes.findById(request.params.dishId)
       .then(
         dish => {
