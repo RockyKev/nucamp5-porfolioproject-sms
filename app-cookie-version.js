@@ -3,8 +3,6 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-var session = require("express-session");
-var FileStore = require("session-file-store")(session);
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -17,6 +15,8 @@ const mongoose = require("mongoose");
 const Dishes = require("./models/dishes");
 const url = "mongodb://localhost:27017/conFusion";
 const connect = mongoose.connect(url);
+
+/* This app is using the cookie session method of saving sessions. So your auth is saved in cookie.*/
 
 connect.then(
   db => {
@@ -36,30 +36,20 @@ app.set("view engine", "jade");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// app.use(cookieParser("12345-67890-54321"));
+app.use(cookieParser("12345-67890-54321"));
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(
-  session({
-    name: "session-id",
-    secret: "12345-67890-54321",
-    saveUninitialized: false,
-    resave: false,
-    store: new FileStore()
-  })
-);
-
 function auth(req, res, next) {
-  console.log(req.session);
+  console.log(req.signedCookies);
 
   var authHeader = req.headers.authorization;
 
-  if (!req.session.user) {
+  if (!req.signedCookies.user) {
     var authHeader = req.headers.authorization;
 
     if (!authHeader) {
       var err = new Error(
-        "You are not authenticated. [error: blank authHeader]"
+        "You are not authenticated. [error: blank authHeader"
       );
 
       res.setHeader("WWW-Authenticate", "Basic");
@@ -75,22 +65,20 @@ function auth(req, res, next) {
     var password = auth[1];
 
     if (username === "admin" && password == "password") {
-      req.session.user = "admin";
+      res.cookie("user", "admin", { signed: true });
       next();
     } else {
-      var err = new Error(
-        "You are not authenticated. [error failed user/pass]"
-      );
+      var err = new Error("You are not authenticated. [error failed user/pass");
 
       res.setHeader("WWW-Authenticate", "Basic");
       err.status = 401;
       return next(err);
     }
   } else {
-    if (req.session.user === "admin") {
+    if (req.signedCookies.user === "admin") {
       next();
     } else {
-      var err = new Error("You are not authenticated. [error in session]");
+      var err = new Error("You are not authenticated. [error in signed cookie");
       err.status = 401;
       return next(err);
     }
