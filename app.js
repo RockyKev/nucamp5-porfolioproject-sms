@@ -32,44 +32,59 @@ var app = express();
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
+app.use(logger("dev"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser("12345-67890-54321"));
+app.use(express.static(path.join(__dirname, "public")));
+
 function auth(req, res, next) {
-  console.log(req.headers);
+  console.log(req.signedCookies);
 
   var authHeader = req.headers.authorization;
 
-  if (!authHeader) {
-    var err = new Error("You are not authenticated.");
+  if (!req.signedCookies.user) {
+    var authHeader = req.headers.authorization;
 
-    res.setHeader("WWW-Authenticate", "Basic");
-    err.status = 401;
-    return next(err);
-  }
+    if (!authHeader) {
+      var err = new Error(
+        "You are not authenticated. [error: blank authHeader"
+      );
 
-  var auth = new Buffer(authHeader.split(" ")[1], "base64")
-    .toString()
-    .split(":");
+      res.setHeader("WWW-Authenticate", "Basic");
+      err.status = 401;
+      return next(err);
+    }
 
-  var username = auth[0];
-  var password = auth[1];
+    var auth = new Buffer.from(authHeader.split(" ")[1], "base64")
+      .toString()
+      .split(":");
 
-  if (username === "admin" && password == "password") {
-    next();
+    var username = auth[0];
+    var password = auth[1];
+
+    if (username === "admin" && password == "password") {
+      res.cookie("user", "admin", { signed: true });
+      next();
+    } else {
+      var err = new Error("You are not authenticated. [error failed user/pass");
+
+      res.setHeader("WWW-Authenticate", "Basic");
+      err.status = 401;
+      return next(err);
+    }
   } else {
-    var err = new Error("You are not authenticated.");
-
-    res.setHeader("WWW-Authenticate", "Basic");
-    err.status = 401;
-    return next(err);
+    if (req.signedCookies.user === "admin") {
+      next();
+    } else {
+      var err = new Error("You are not authenticated. [error in signed cookie");
+      err.status = 401;
+      return next(err);
+    }
   }
 }
 
 app.use(auth);
-
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
