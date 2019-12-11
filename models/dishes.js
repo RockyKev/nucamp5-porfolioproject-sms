@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-require('mongoose-currency').loadType(mongoose);
+require("mongoose-currency").loadType(mongoose);
 
 const Currency = mongoose.Types.Currency;
-
 
 const commentSchema = new Schema(
   {
@@ -18,8 +17,8 @@ const commentSchema = new Schema(
       required: true
     },
     author: {
-      type: String,
-      required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
     }
   },
   {
@@ -42,22 +41,22 @@ const dishSchema = new Schema(
     image: {
       type: String,
       required: true
-    }, 
+    },
     category: {
-      type: String, 
+      type: String,
       required: true
-    }, 
+    },
     label: {
       type: String,
-      default: '' 
-     }, 
+      default: ""
+    },
     price: {
-      type: Currency, 
-      required: true, 
+      type: Currency,
+      required: true,
       min: 0
     },
     featured: {
-      type: Boolean, 
+      type: Boolean,
       default: false
     },
     comments: [commentSchema]
