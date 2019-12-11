@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const authenticate = require("../authenticate");
 
 const Leaders = require("../models/leaders");
 
@@ -20,49 +21,49 @@ leaderRouter
   .get((request, response, next) => {
     // response.end("Will send all the leaders to you!");
     Leaders.find({})
-    .then(
-      leader => {
-        response.statusCode = 200;
-        response.setHeader("Content-Type", "application/json");
-        response.json(leader);
-      },
-      err => next(err)
-    )
-    .catch(err => next(err));
-})
+      .then(
+        leader => {
+          response.statusCode = 200;
+          response.setHeader("Content-Type", "application/json");
+          response.json(leader);
+        },
+        err => next(err)
+      )
+      .catch(err => next(err));
+  })
 
-  .post((request, response, next) => {
+  .post(authenticate.verifyUser, (request, response, next) => {
     Leaders.create(request.body)
-    .then(
-      leader => {
-        console.log("Leader Created ", leader);
+      .then(
+        leader => {
+          console.log("Leader Created ", leader);
 
-        response.statusCode = 200;
-        response.setHeader("Content-Type", "application/json");
-        response.json(leader);
-      },
-      err => next(err)
-    )
-    .catch(err => next(err));
-})
+          response.statusCode = 200;
+          response.setHeader("Content-Type", "application/json");
+          response.json(leader);
+        },
+        err => next(err)
+      )
+      .catch(err => next(err));
+  })
 
-  .put((request, response, next) => {
+  .put(authenticate.verifyUser, (request, response, next) => {
     response.statusCode = 403;
     response.end("PUT operation not supported on /leader");
   })
 
-  .delete((request, response, next) => {
+  .delete(authenticate.verifyUser, (request, response, next) => {
     Leaders.remove({})
-    .then(
-      resp => {
-        response.statusCode = 200;
-        response.setHeader("Content-Type", "application/json");
-        response.json(resp);
-      },
-      err => next(err)
-    )
-    .catch(err => next(err));
-});
+      .then(
+        resp => {
+          response.statusCode = 200;
+          response.setHeader("Content-Type", "application/json");
+          response.json(resp);
+        },
+        err => next(err)
+      )
+      .catch(err => next(err));
+  });
 
 leaderRouter
   .route("/:leaderId")
@@ -89,14 +90,14 @@ leaderRouter
       .catch(err => next(err));
   })
 
-  .post((request, response, next) => {
+  .post(authenticate.verifyUser, (request, response, next) => {
     response.statusCode = 403;
     response.end(
       "POST operation not supported on /leaders" + request.params.leaderId
     );
   })
 
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     Leaders.findByIdAndUpdate(
       req.params.leaderId,
       {
@@ -115,7 +116,7 @@ leaderRouter
       .catch(err => next(err));
   })
 
-  .delete((request, response, next) => {
+  .delete(authenticate.verifyUser, (request, response, next) => {
     Leaders.findByIdAndRemove(request.params.leaderId)
       .then(
         resp => {

@@ -15,7 +15,6 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 exports.getToken = function(user) {
-  //in production, you might set it for a few days, instead of 3600 = 1 hour
   return jwt.sign(user, config.secretKey, { expiresIn: 3600 });
 };
 
