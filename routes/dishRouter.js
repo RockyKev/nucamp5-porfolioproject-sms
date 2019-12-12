@@ -279,24 +279,50 @@ dishRouter
       .then(
         dish => {
           if (dish != null && dish.comments.id(req.params.commentId) != null) {
-            if (req.body.rating) {
-              dish.comments.id(req.params.commentId).rating = req.body.rating;
-            }
-            if (req.body.comment) {
-              dish.comments.id(req.params.commentId).comment = req.body.comment;
-            }
-            dish.save().then(
-              dish => {
-                Dishes.findById(dish._id)
-                  .populate("comments.author")
-                  .then(dish => {
-                    res.statusCode = 200;
-                    res.setHeader("Content-Type", "application/json");
-                    res.json(dish);
-                  });
-              },
-              err => next(err)
+            //testing to see if the values work
+            console.log(JSON.stringify(req.user._id));
+            console.log("CHECK PARAMS");
+            console.log(
+              JSON.stringify(dish.comments.id(req.params.commentId).author)
             );
+
+            //simplify dish comments
+            let dishComment = dish.comments.id(req.params.commentId);
+
+            console.log("MODIFIED: " + dishComment.author);
+
+            // if (req.user._id === dishComment.author) {
+            if (
+              JSON.stringify(req.user._id) !==
+              JSON.stringify(dish.comments.id(req.params.commentId).author)
+            ) {
+              console.log("id mismatch");
+              err = new Error("You are not the father!");
+              err.status = 404;
+              return next(err);
+            }
+
+            if (req.body.rating) {
+              dishComment.rating = req.body.rating;
+            }
+
+            if (req.body.comment) {
+              dishComment.comment = req.body.comment;
+            }
+            dish
+              .save() //save the changes
+              .then(
+                dish => {
+                  Dishes.findById(dish._id)
+                    .populate("comments.author")
+                    .then(dish => {
+                      res.statusCode = 200;
+                      res.setHeader("Content-Type", "application/json");
+                      res.json(dish);
+                    });
+                },
+                err => next(err)
+              );
           } else if (dish == null) {
             err = new Error("Dish " + req.params.dishId + " not found");
             err.status = 404;
