@@ -11,7 +11,7 @@ router.use(bodyParser.json());
 router.get("/", authenticate.verifyUser, function(req, res, next) {
   // res.send("respond with a resource");
 
-  // console.log(req.user);
+  console.log(req.user);
   if (req.user.admin) {
     console.log("user is an admin");
     Users.find({})
@@ -32,6 +32,17 @@ router.get("/", authenticate.verifyUser, function(req, res, next) {
     err.status = 403;
     return next(err);
   }
+
+  Users.find({})
+    .then(
+      user => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(user);
+      },
+      err => next(err)
+    )
+    .catch(err => next(err));
 });
 
 /* Sign up route. */
