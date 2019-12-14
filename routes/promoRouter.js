@@ -32,38 +32,50 @@ promoRouter
       .catch(err => next(err));
   })
 
-  .post(authenticate.verifyUser, (request, response, next) => {
-    Promotions.create(request.body)
-      .then(
-        promotion => {
-          console.log("promotion Created ", promotion);
+  .post(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      Promotions.create(request.body)
+        .then(
+          promotion => {
+            console.log("promotion Created ", promotion);
 
-          response.statusCode = 200;
-          response.setHeader("Content-Type", "application/json");
-          response.json(promotion);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  })
+            response.statusCode = 200;
+            response.setHeader("Content-Type", "application/json");
+            response.json(promotion);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  )
 
-  .put(authenticate.verifyUser, (request, response, next) => {
-    response.statusCode = 403;
-    response.end("PUT operation not supported on /promotions");
-  })
+  .put(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      response.statusCode = 403;
+      response.end("PUT operation not supported on /promotions");
+    }
+  )
 
-  .delete(authenticate.verifyUser, (request, response, next) => {
-    Promotions.remove({})
-      .then(
-        resp => {
-          response.statusCode = 200;
-          response.setHeader("Content-Type", "application/json");
-          response.json(resp);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  });
+  .delete(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      Promotions.remove({})
+        .then(
+          resp => {
+            response.statusCode = 200;
+            response.setHeader("Content-Type", "application/json");
+            response.json(resp);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  );
 
 promoRouter
   .route("/:promotionId")
@@ -90,15 +102,19 @@ promoRouter
       .catch(err => next(err));
   })
 
-  .post(authenticate.verifyUser, (request, response, next) => {
-    response.statusCode = 403;
-    response.end(
-      "POST operation not supported on /Promotions/" +
-        request.params.promotionId
-    );
-  })
+  .post(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      response.statusCode = 403;
+      response.end(
+        "POST operation not supported on /Promotions/" +
+          request.params.promotionId
+      );
+    }
+  )
 
-  .put(authenticate.verifyUser, (req, res, next) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Promotions.findByIdAndUpdate(
       req.params.promotionId,
       {
@@ -117,17 +133,21 @@ promoRouter
       .catch(err => next(err));
   })
 
-  .delete(authenticate.verifyUser, (request, response, next) => {
-    Promotions.findByIdAndRemove(request.params.promotionId)
-      .then(
-        resp => {
-          response.statusCode = 200;
-          response.setHeader("Content-Type", "application/json");
-          response.json(resp);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  });
+  .delete(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      Promotions.findByIdAndRemove(request.params.promotionId)
+        .then(
+          resp => {
+            response.statusCode = 200;
+            response.setHeader("Content-Type", "application/json");
+            response.json(resp);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  );
 
 module.exports = promoRouter;

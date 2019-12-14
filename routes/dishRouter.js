@@ -34,46 +34,58 @@ dishRouter
       .catch(err => next(err));
   })
 
-  .post(authenticate.verifyUser, (request, response, next) => {
-    // response.end(
-    //   "Will add the dish: " +
-    //     request.body.name +
-    //     " with details: " +
-    //     request.body.description
+  .post(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      // response.end(
+      //   "Will add the dish: " +
+      //     request.body.name +
+      //     " with details: " +
+      //     request.body.description
 
-    Dishes.create(request.body)
-      .then(
-        dish => {
-          console.log("Dish Created ", dish);
+      Dishes.create(request.body)
+        .then(
+          dish => {
+            console.log("Dish Created ", dish);
 
-          response.statusCode = 200;
-          response.setHeader("Content-Type", "application/json");
-          response.json(dish);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  })
+            response.statusCode = 200;
+            response.setHeader("Content-Type", "application/json");
+            response.json(dish);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  )
 
-  .put(authenticate.verifyUser, (request, response, next) => {
-    response.statusCode = 403;
-    response.end("PUT operation not supported on /DISHES");
-  })
+  .put(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      response.statusCode = 403;
+      response.end("PUT operation not supported on /DISHES");
+    }
+  )
 
-  .delete(authenticate.verifyUser, (request, response, next) => {
-    // response.end("Deleting all the dishes!");
+  .delete(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      // response.end("Deleting all the dishes!");
 
-    Dishes.remove({})
-      .then(
-        resp => {
-          response.statusCode = 200;
-          response.setHeader("Content-Type", "application/json");
-          response.json(resp);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  });
+      Dishes.remove({})
+        .then(
+          resp => {
+            response.statusCode = 200;
+            response.setHeader("Content-Type", "application/json");
+            response.json(resp);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  );
 
 /************************************
  * MODIFYING THE DISH with IDS
@@ -101,14 +113,18 @@ dishRouter
       )
       .catch(err => next(err));
   })
-  .post(authenticate.verifyUser, (request, response, next) => {
-    response.statusCode = 403;
-    response.end(
-      "POST operation not supported on /dishes/" + request.params.dishId
-    );
-  })
+  .post(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      response.statusCode = 403;
+      response.end(
+        "POST operation not supported on /dishes/" + request.params.dishId
+      );
+    }
+  )
 
-  .put(authenticate.verifyUser, (req, res, next) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Dishes.findByIdAndUpdate(
       req.params.dishId,
       {
@@ -126,18 +142,22 @@ dishRouter
       )
       .catch(err => next(err));
   })
-  .delete(authenticate.verifyUser, (request, response, next) => {
-    Dishes.findByIdAndRemove(request.params.dishId)
-      .then(
-        resp => {
-          response.statusCode = 200;
-          response.setHeader("Content-Type", "application/json");
-          response.json(resp);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  });
+  .delete(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      Dishes.findByIdAndRemove(request.params.dishId)
+        .then(
+          resp => {
+            response.statusCode = 200;
+            response.setHeader("Content-Type", "application/json");
+            response.json(resp);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  );
 
 /************************************
  *
@@ -210,31 +230,35 @@ dishRouter
     );
   })
 
-  .delete(authenticate.verifyUser, (request, response, next) => {
-    Dishes.findById(request.params.dishId)
-      .then(
-        dish => {
-          if (dish != null) {
-            for (var i = dish.comments.length - 1; i >= 0; i--) {
-              dish.comments.id(dish.comments[i]._id).remove();
-            }
+  .delete(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      Dishes.findById(request.params.dishId)
+        .then(
+          dish => {
+            if (dish != null) {
+              for (var i = dish.comments.length - 1; i >= 0; i--) {
+                dish.comments.id(dish.comments[i]._id).remove();
+              }
 
-            dish.save().then(dish => {
-              response.statusCode = 200;
-              response.setHeader("Content-Type", "application/json");
-              response.json(dish);
-            }),
-              err => next(err);
-          } else {
-            err = new Error("Dish " + request.params.dishId + " not found");
-            err.status = 404;
-            return next(err);
-          }
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  });
+              dish.save().then(dish => {
+                response.statusCode = 200;
+                response.setHeader("Content-Type", "application/json");
+                response.json(dish);
+              }),
+                err => next(err);
+            } else {
+              err = new Error("Dish " + request.params.dishId + " not found");
+              err.status = 404;
+              return next(err);
+            }
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  );
 
 /************************************
  * MODIFYING THE COMMENT ID ITSELF
@@ -296,9 +320,9 @@ dishRouter
               // JSON.stringify(req.user._id) !==
               // JSON.stringify(dish.comments.id(req.params.commentId).author)
 
-              dish.comments
+              !dish.comments
                 .id(req.params.commentId)
-                .author._id.equals(reqs.user._id)
+                .author._id.equals(req.user._id)
             ) {
               console.log("id mismatch");
               err = new Error("You are not the father!");

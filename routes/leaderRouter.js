@@ -32,38 +32,50 @@ leaderRouter
       .catch(err => next(err));
   })
 
-  .post(authenticate.verifyUser, (request, response, next) => {
-    Leaders.create(request.body)
-      .then(
-        leader => {
-          console.log("Leader Created ", leader);
+  .post(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      Leaders.create(request.body)
+        .then(
+          leader => {
+            console.log("Leader Created ", leader);
 
-          response.statusCode = 200;
-          response.setHeader("Content-Type", "application/json");
-          response.json(leader);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  })
+            response.statusCode = 200;
+            response.setHeader("Content-Type", "application/json");
+            response.json(leader);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  )
 
-  .put(authenticate.verifyUser, (request, response, next) => {
-    response.statusCode = 403;
-    response.end("PUT operation not supported on /leader");
-  })
+  .put(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      response.statusCode = 403;
+      response.end("PUT operation not supported on /leader");
+    }
+  )
 
-  .delete(authenticate.verifyUser, (request, response, next) => {
-    Leaders.remove({})
-      .then(
-        resp => {
-          response.statusCode = 200;
-          response.setHeader("Content-Type", "application/json");
-          response.json(resp);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  });
+  .delete(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      Leaders.remove({})
+        .then(
+          resp => {
+            response.statusCode = 200;
+            response.setHeader("Content-Type", "application/json");
+            response.json(resp);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  );
 
 leaderRouter
   .route("/:leaderId")
@@ -90,14 +102,18 @@ leaderRouter
       .catch(err => next(err));
   })
 
-  .post(authenticate.verifyUser, (request, response, next) => {
-    response.statusCode = 403;
-    response.end(
-      "POST operation not supported on /leaders" + request.params.leaderId
-    );
-  })
+  .post(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      response.statusCode = 403;
+      response.end(
+        "POST operation not supported on /leaders" + request.params.leaderId
+      );
+    }
+  )
 
-  .put(authenticate.verifyUser, (req, res, next) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Leaders.findByIdAndUpdate(
       req.params.leaderId,
       {
@@ -116,17 +132,21 @@ leaderRouter
       .catch(err => next(err));
   })
 
-  .delete(authenticate.verifyUser, (request, response, next) => {
-    Leaders.findByIdAndRemove(request.params.leaderId)
-      .then(
-        resp => {
-          response.statusCode = 200;
-          response.setHeader("Content-Type", "application/json");
-          response.json(resp);
-        },
-        err => next(err)
-      )
-      .catch(err => next(err));
-  });
+  .delete(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (request, response, next) => {
+      Leaders.findByIdAndRemove(request.params.leaderId)
+        .then(
+          resp => {
+            response.statusCode = 200;
+            response.setHeader("Content-Type", "application/json");
+            response.json(resp);
+          },
+          err => next(err)
+        )
+        .catch(err => next(err));
+    }
+  );
 
 module.exports = leaderRouter;
