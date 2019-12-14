@@ -293,8 +293,12 @@ dishRouter
 
             // if (req.user._id === dishComment.author) {
             if (
-              JSON.stringify(req.user._id) !==
-              JSON.stringify(dish.comments.id(req.params.commentId).author)
+              // JSON.stringify(req.user._id) !==
+              // JSON.stringify(dish.comments.id(req.params.commentId).author)
+
+              dish.comments
+                .id(req.params.commentId)
+                .author._id.equals(reqs.user._id)
             ) {
               console.log("id mismatch");
               err = new Error("You are not the father!");
