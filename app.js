@@ -1,24 +1,20 @@
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
-var cookieParser = require("cookie-parser");
+// var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var session = require("express-session");
-var FileStore = require("session-file-store")(session);
+// var FileStore = require("session-file-store")(session);
 var passport = require("passport");
-var authenticate = require("./authenticate");
+// var authenticate = require("./authenticate");
 var config = require("./config");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
-var dishRouter = require("./routes/dishRouter");
-var promoRouter = require("./routes/promoRouter");
-var leaderRouter = require("./routes/leaderRouter");
 var txtMsgRouter = require("./routes/txtMsgRouter");
 
 const mongoose = require("mongoose");
 
-const Dishes = require("./models/dishes");
 const url = config.mongoUrl;
 const connect = mongoose.connect(url);
 
@@ -49,9 +45,6 @@ app.use("/users", usersRouter);
 
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/dishes", dishRouter);
-app.use("/promotions", promoRouter);
-app.use("/leaders", leaderRouter);
 app.use("/texts", txtMsgRouter);
 
 // catch 404 and forward to error handler
