@@ -1,8 +1,9 @@
 var express = require("express");
 const bodyParser = require("body-parser");
-var User = require("../models/user");
 var passport = require("passport");
 var authenticate = require("../authenticate");
+
+var User = require("../models/user");
 
 var router = express.Router();
 router.use(bodyParser.json());
@@ -13,30 +14,6 @@ router.get("/", authenticate.verifyUser, authenticate.verifyAdmin, function(
   res,
   next
 ) {
-  // res.send("respond with a resource");
-
-  // console.log(req.user);
-  // if (req.user.admin) {
-  //   console.log("user is an admin");
-  //   Users.find({})
-  //    .then(
-  //       user => {
-  //         res.statusCode = 200;
-  //         res.setHeader("Content-Type", "application/json");
-  //         res.json(user);
-  //       },
-  //       err => next(err)
-  //     )
-  //     .catch(err => next(err));
-  // } else {
-  //   console.log("user is NOT admin.");
-  //   err = new Error(
-  //     "You are not admin enough to get in here. You are not authorized to perform this operation!"
-  //   );
-  //   err.status = 403;
-  //   return next(err);
-  // }
-
   User.find({})
     .then(
       user => {
@@ -101,6 +78,10 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
     status: "You are Successful - logged in!!"
   });
 });
+
+// router.post("/chockie", (req, res) => {
+//   console.log("Chockie");
+// });
 
 /* for logging out the user */
 

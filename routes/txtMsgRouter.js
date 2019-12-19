@@ -2,27 +2,30 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const authenticate = require("../authenticate");
+// var config = require("../config"); // to pull all the SECRETS
 
 const TextMessages = require("../models/txtMessages");
+const SendTextMessage = require("../sms");
 
 const txtMsgRouter = express.Router();
-
 txtMsgRouter.use(bodyParser.json());
 
 txtMsgRouter
   .route("/")
 
-  .all((request, response, next) => {
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "text/plain");
-    next();
-  })
+  // .all((request, response, next) => {
+  //   response.statusCode = 200;
+  //   response.setHeader("Content-Type", "text/plain");
+  //   next();
+  // })
 
   .get((request, response, next) => {
     // response.end("Will send all the TextMessages to you!");
     TextMessages.find({})
       .then(
         textMessage => {
+          console.log(textMessage);
+
           response.statusCode = 200;
           response.setHeader("Content-Type", "application/json");
           response.json(textMessage);
@@ -77,15 +80,12 @@ txtMsgRouter
     }
   );
 
+/*********************************
+ * THIS IS TO GET THE MESSAGE IDS
+ *********************************/
+
 txtMsgRouter
   .route("/:textMessageId")
-  // .route("/:promoId/recipe/:recipeId")
-
-  // .all((request, response, next) => {
-  //   response.statusCode = 200;
-  //   response.setHeader("Content-Type", "text/plain");
-  //   next();
-  // })
 
   .get((request, response, next) => {
     TextMessages.findById(request.params.textMessageId)
@@ -149,5 +149,68 @@ txtMsgRouter
         .catch(err => next(err));
     }
   );
+
+/*********************************
+ * THIS IS TO SEND THE TEXT MESSAGE
+ *********************************/
+
+/************************************
+ *
+ * MODIFYING THE COMMENTS ENDPOINTS
+ *
+ * *********************************/
+
+txtMsgRouter
+  .route("/:textMessageId/send/")
+
+  .get((request, response, next) => {
+    TextMessages.findById(request.params.textMessageId)
+      .then(
+        text => {
+          //set up conditional
+
+          //check to see if null
+          if (!text.wasMsgSent) {
+            console.log(text.message);
+
+            text.wasMsgSent = true;
+            text.save();
+          }
+
+          response.statusCode = 200;
+          response.setHeader("Content-Type", "application/json");
+          response.json(text.message);
+        },
+        err => next(err)
+      )
+      .catch(err => next(err));
+  })
+
+  .post(authenticate.verifyUser, (request, response, next) => {
+    response.statusCode = 403;
+    response.end(
+      "POST operation not supported on /text/" +
+        request.params.textMessageId +
+        "/comments"
+    );
+  })
+
+  .put(authenticate.verifyUser, (request, response, next) => {
+    response.statusCode = 403;
+    response.end(
+      "PUT operation not supported on /text/" +
+        request.params.textMessageId +
+        "/comments"
+    );
+  })
+
+  .delete(authenticate.verifyUser, (request, response, next) => {
+    response.statusCode = 403;
+    response.end(
+      "DELETE operation not supported on /text/" +
+        request.params.textMessageId +
+        "/comments"
+    );
+  });
 
 module.exports = txtMsgRouter;
