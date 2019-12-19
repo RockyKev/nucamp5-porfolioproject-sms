@@ -1,6 +1,6 @@
 var express = require("express");
 const bodyParser = require("body-parser");
-var Users = require("../models/user");
+var User = require("../models/user");
 var passport = require("passport");
 var authenticate = require("../authenticate");
 
@@ -37,7 +37,7 @@ router.get("/", authenticate.verifyUser, authenticate.verifyAdmin, function(
   //   return next(err);
   // }
 
-  Users.find({})
+  User.find({})
     .then(
       user => {
         res.statusCode = 200;
@@ -52,7 +52,7 @@ router.get("/", authenticate.verifyUser, authenticate.verifyAdmin, function(
 /* Sign up route. */
 
 router.post("/signup", (req, res, next) => {
-  Users.register(
+  User.register(
     new User({ username: req.body.username }),
     req.body.password,
     (err, user) => {
