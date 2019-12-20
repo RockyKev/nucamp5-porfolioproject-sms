@@ -18,48 +18,17 @@ Handling time zones -> https://medium.com/@toastui/handling-time-zone-in-javascr
 ## Components in a post request for message
 
         {
-    "message": "This is a different text",
-    "whenToSendMsg": "December 18, 2019 06:30:00"
-
+            "message": "This is a different text",
+            "whenToSendMsg": "December 18, 2019 06:30:00"
         }
 
-## User Accounts to test
+## Things to do
 
-**usernames/passwords**
-user1 / user1
-user2 / user2
-user3 / user3
-admin / admin
+[] - add authentication
 
-##success tokens
-user1 =
+## Questions for Adam
 
-```
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZGYxNDUxNDUzNmFmNjFiZTAyYTA3NjIiLCJpYXQiOjE1NzYxODU3NjQsImV4cCI6MTU3NjE4OTM2NH0.-N5H2eRGZJuDDeMZQNYYcU0GbFJmthq-sv09wobtdqQ
-```
+1. The nodejs route for make is locked. It says unauthorized.
+   BUT -- if i visit make.html, it's available. Is it because it's in /public?
 
-user2 =
-
-```
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZGYxNDUxZjUzNmFmNjFiZTAyYTA3NjMiLCJpYXQiOjE1NzYxODA3NTQsImV4cCI6MTU3NjE4NDM1NH0.rekBPO2P6RCA5lpD0sag0XCISMiZHcKjC87tjIvj5Aw
-```
-
-user3 =
-
-````
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZGYxNDUwYjUzNmFmNjFiZTAyYTA3NjEiLCJpYXQiOjE1NzYxODA3ODUsImV4cCI6MTU3NjE4NDM4NX0.sIy95biaZERJYjUwD4bE_42X9u5byQdCUzIgqMeYNbg
-```
-
-admin =
-
-```
-
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZGYxNDUzMzUzNmFmNjFiZTAyYTA3NjQiLCJpYXQiOjE1NzYxODU2NzIsImV4cCI6MTU3NjE4OTI3Mn0.ewx4eJ1KaQV0BQnB1AyG16HGZry7mwNz_GIoPCG_MXM
-
-```
-````
-
-{
-"username": "admin",
-"password": "admin"
-}
+2. The

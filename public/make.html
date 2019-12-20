@@ -66,28 +66,32 @@
     </style>
 
     <h1 class="center">I 💖 You Mom App</h1>
-    <div class="inbox box2">
-      <form action="/users/login" method="post">
-        <div>
-          <label>Username:</label>
-          <input type="text" name="username" />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input type="password" name="password" />
-        </div>
-        <div>
-          <input type="submit" value="Log In" />
-        </div>
-      </form>
-    </div>
 
     <div class="inbox box2">
-      <p>Show text messages here if logged in (?)</p>
+      <p></p>
     </div>
 
     <div class="inbox box3 center">
-      <p>Do you want to <a href="/make">make a text message</a>?</p>
+      <form action="/texts/" method="POST">
+        Date:<br />
+        <input type="datetime-local" name="whenToSendMsg" />
+        <br />
+        Message:<br />
+        <textarea
+          rows="4"
+          cols="50"
+          type="text"
+          name="message"
+          value="Send a text message"
+          width="100"
+        >
+        </textarea>
+
+        <br /><br />
+        <input type="submit" value="Submit" />
+      </form>
     </div>
+
+    <div class="footer center">Rocky Kev 2019 - heyitsRocky.com</div>
   </body>
 </html>

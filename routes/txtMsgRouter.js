@@ -170,16 +170,21 @@ txtMsgRouter
           //set up conditional
 
           //check to see if null
+          console.log("message checking if statement");
+
           if (!text.wasMsgSent) {
+            SendTextMessage(text.message);
             console.log(text.message);
 
             text.wasMsgSent = true;
             text.save();
           }
 
+          console.log("message completed if statement");
+
           response.statusCode = 200;
           response.setHeader("Content-Type", "application/json");
-          response.json(text.message);
+          response.json(`${text.message} has been sent!`);
         },
         err => next(err)
       )

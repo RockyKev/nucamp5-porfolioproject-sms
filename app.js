@@ -4,9 +4,11 @@ var path = require("path");
 var logger = require("morgan");
 var session = require("express-session");
 var passport = require("passport");
+
 var config = require("./config");
 
 var indexRouter = require("./routes/index");
+var makeRouter = require("./routes/make");
 var usersRouter = require("./routes/users");
 var txtMsgRouter = require("./routes/txtMsgRouter");
 
@@ -40,6 +42,7 @@ app.use(passport.initialize());
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/texts", txtMsgRouter);
+app.use("/make", makeRouter);
 
 app.use(express.static(path.join(__dirname, "public")));
 
