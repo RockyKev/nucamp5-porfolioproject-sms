@@ -68,37 +68,37 @@ router.post("/signup", (req, res, next) => {
 });
 
 /* ORIGINAL -- POSTS JSON */
-// router.post("/login", passport.authenticate("local"), (req, res) => {
-//   var token = authenticate.getToken({ _id: req.user._id });
+router.post("/login", passport.authenticate("local"), (req, res) => {
+  var token = authenticate.getToken({ _id: req.user._id });
 
-//   res.statusCode = 200;
-//   res.setHeader("Content-Type", "application/json");
-//   res.json({
-//     success: true,
-//     token: token,
-//     status: "You are Successful - logged in!!"
-//   });
-// });
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "application/json");
+  res.json({
+    success: true,
+    token: token,
+    status: "You are Successful - logged in!!"
+  });
+});
 
-router.post(
-  "/login",
-  passport.authenticate("local", {
-    successRedirect: "/success",
-    failureRedirect: "/login",
-    failureFlash: true
-  }),
-  (req, res) => {
-    var token = authenticate.getToken({ _id: req.user._id });
+// router.post(
+//   "/login",
+//   passport.authenticate("local", {
+//     successRedirect: "/success",
+//     failureRedirect: "/login",
+//     failureFlash: true
+//   }),
+//   (req, res) => {
+//     var token = authenticate.getToken({ _id: req.user._id });
 
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "application/json");
-    res.json({
-      success: true,
-      token: token,
-      status: "You are Successful - logged in!!"
-    });
-  }
-);
+//     res.statusCode = 200;
+//     res.setHeader("Content-Type", "application/json");
+//     res.json({
+//       success: true,
+//       token: token,
+//       status: "You are Successful - logged in!!"
+//     });
+//   }
+// );
 
 // router.post("/chockie", (req, res) => {
 //   console.log("Chockie");
