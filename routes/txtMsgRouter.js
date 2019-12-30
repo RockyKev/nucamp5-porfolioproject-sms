@@ -36,8 +36,8 @@ txtMsgRouter
   })
 
   .post(
-    authenticate.verifyUser,
-    authenticate.verifyAdmin,
+    // authenticate.verifyUser,
+    // authenticate.verifyAdmin,
     (request, response, next) => {
       TextMessages.create(request.body)
         .then(
@@ -194,27 +194,21 @@ txtMsgRouter
   .post(authenticate.verifyUser, (request, response, next) => {
     response.statusCode = 403;
     response.end(
-      "POST operation not supported on /text/" +
-        request.params.textMessageId +
-        "/comments"
+      "POST operation not supported on /text/" + request.params.textMessageId
     );
   })
 
   .put(authenticate.verifyUser, (request, response, next) => {
     response.statusCode = 403;
     response.end(
-      "PUT operation not supported on /text/" +
-        request.params.textMessageId +
-        "/comments"
+      "PUT operation not supported on /text/" + request.params.textMessageId
     );
   })
 
   .delete(authenticate.verifyUser, (request, response, next) => {
     response.statusCode = 403;
     response.end(
-      "DELETE operation not supported on /text/" +
-        request.params.textMessageId +
-        "/comments"
+      "DELETE operation not supported on /text/" + request.params.textMessageId
     );
   });
 
